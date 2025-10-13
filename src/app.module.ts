@@ -1,24 +1,32 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+
 import { UserModule } from './users/users.module';
-import * as dotenv from 'dotenv';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CoursesModule } from './courses/courses.module';
+import { LessonsModule } from './lessons/lessons.module';
+import { SubjectsModule } from './subjects/subjects.module';
 
 dotenv.config();
 @Module({
   imports: [
+
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
       autoLoadEntities: true,
-      synchronize:true
+      synchronize: true,
+      ssl: true,
     }),
-    UserModule
-
+    UserModule,
+    LessonsModule,
+    CoursesModule,
+    SubjectsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
-
-export class AppModule {}
+export class AppModule { }
