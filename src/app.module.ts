@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
 
 import { UserModule } from './users/users.module';
-import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CoursesModule } from './courses/courses.module';
 import { LessonsModule } from './lessons/lessons.module';
 import { SubjectsModule } from './subjects/subjects.module';
-
-dotenv.config();
+ConfigModule.forRoot();
 @Module({
   imports: [
 
