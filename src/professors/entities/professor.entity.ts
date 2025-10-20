@@ -1,5 +1,6 @@
-import { Entity, PrimaryColumn, OneToOne, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, OneToOne, OneToMany, JoinColumn, Column } from 'typeorm';
 import { User } from '../../users/entities/users.entity';
+import { Subject } from '../../subjects/entities/subject.entity';
 
 @Entity('professors')
 export class Professor {
@@ -10,6 +11,9 @@ export class Professor {
   subject: string;
 
   @OneToOne(() => User, user => user.professor)
+  @OneToMany(() => Subject, (sub) => sub.professor)
+  subjects: Subject[];
+  
   @JoinColumn() // il lato "owner" della relazione
   user: User;
 }
