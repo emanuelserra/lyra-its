@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CoursesModule } from './courses/courses.module';
 import { LessonsModule } from './lessons/lessons.module';
+import { AttendancesModule } from './attendances/attendances.module'
 import { SubjectsModule } from './subjects/subjects.module';
 import { StudentsModule } from './students/students.module';
 import { ProfessorSubjectsModule } from './professor_subjects/professor_subjects.module';
@@ -26,6 +27,7 @@ ConfigModule.forRoot();
     }),
     UserModule,
     LessonsModule,
+    AttendancesModule,
     CoursesModule,
     SubjectsModule,
     StudentsModule,

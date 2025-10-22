@@ -1,27 +1,27 @@
 import {
   Controller,
-  Get,
   Post,
-  Body,
-  Param,
+  Get,
   Patch,
-  Delete,
-  ParseIntPipe,
+  Param,
+  Body
 } from '@nestjs/common';
 import { LessonsService } from './lessons.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
+import { UpdateLessonDto } from './dto/update-lesson.dto';
+import { Lesson } from './entities/lesson.entity';
 
 @Controller('lessons')
 export class LessonsController {
-  constructor(private readonly lessonsService: LessonsService) {}
+  constructor(private readonly lessonsService: LessonsService) { }
 
   @Post()
-  create(@Body() dto: CreateLessonDto) {
+  create(@Body() dto: CreateLessonDto): Promise<Lesson> {
     return this.lessonsService.create(dto);
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<Lesson[]> {
     return this.lessonsService.findAll();
   }
 

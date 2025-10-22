@@ -24,4 +24,8 @@ export class CreateLessonDto {
     @IsNotEmpty()
     @IsNumber()
     professorId: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    subjectId: number;
 }

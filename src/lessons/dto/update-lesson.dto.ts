@@ -23,4 +23,8 @@ export class UpdateLessonDto {
     @IsOptional()
     @IsNumber()
     professorId?: number;
+
+    @IsOptional()
+    @IsNumber()
+    subjectId?: number;
 }
