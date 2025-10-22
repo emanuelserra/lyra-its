@@ -5,18 +5,11 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  //Abilita validazione globale (DTO con class-validator)
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,             // accetta solo campi previsti nei DTO
-    forbidNonWhitelisted: true,  // rifiuta extra fields
-    transform: true,             // converte automaticamente tipi (string -> number)
-  }));
+  // ✅ ValidationPipe per DTO con class-validator
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+  );
 
-  // Abilita CORS (per il frontend Next.js)
-  app.enableCors();
-
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-  console.log(`🚀 Backend running on http://localhost:${port}`);
+  await app.listen(3000);
 }
 bootstrap();
