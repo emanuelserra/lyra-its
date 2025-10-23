@@ -1,38 +1,36 @@
 import { Module } from '@nestjs/common';
-
-import { UserModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { UsersModule } from './users/users.module';
 import { CoursesModule } from './courses/courses.module';
 import { LessonsModule } from './lessons/lessons.module';
-import { AttendancesModule } from './attendances/attendances.module'
+import { AttendancesModule } from './attendances/attendances.module';
 import { SubjectsModule } from './subjects/subjects.module';
 import { StudentsModule } from './students/students.module';
-import { ProfessorSubjectsModule } from './professor_subjects/professor_subjects.module';
-import { ProfessorCoursesModule } from './professor_courses/professor_courses.module';
-ConfigModule.forRoot();
+import { ProfessorsModule } from './professors/professors.module';
+import { ExamSessionsModule } from './exam_sessions/exam_sessions.module';
+import { ExamResultsModule } from './exam_results/exam_results.module';
+
 @Module({
   imports: [
-
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-
     TypeOrmModule.forRoot({
       type: 'postgres',
-      url: process.env.DATABASE_URL,
+      url: process.env.DB_URL,
       autoLoadEntities: true,
-      synchronize: true,
-      ssl: true,
+      synchronize: process.env.NODE_ENV !== 'production',
     }),
-    UserModule,
-    LessonsModule,
-    AttendancesModule,
+    UsersModule,
+    StudentsModule,
+    ProfessorsModule,
     CoursesModule,
     SubjectsModule,
-    StudentsModule,
-    ProfessorSubjectsModule,
-    ProfessorCoursesModule,
+    LessonsModule,
+    AttendancesModule,
+    ExamSessionsModule,
+    ExamResultsModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}
