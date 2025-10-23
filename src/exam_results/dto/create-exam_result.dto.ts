@@ -1,19 +1,28 @@
-import { IsBoolean, IsInt, IsNumber, IsOptional, Min, Max } from 'class-validator';
+import {
+  IsBoolean,
+  IsNumber,
+  IsNotEmpty,
+  IsOptional,
+  Min,
+  Max,
+} from 'class-validator';
 
 export class CreateExamResultDto {
-  @IsInt()
+  @IsNumber()
+  @IsNotEmpty()
   exam_session_id: number;
 
-  @IsInt()
+  @IsNumber()
+  @IsNotEmpty()
   student_id: number;
 
-  @IsOptional()
   @IsNumber({ maxDecimalPlaces: 1 })
+  @IsOptional()
   @Min(0)
   @Max(30)
   grade?: number;
 
-  @IsOptional()
   @IsBoolean()
+  @IsOptional()
   passed?: boolean;
 }

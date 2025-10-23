@@ -6,38 +6,39 @@ import {
   JoinColumn,
   Unique,
 } from 'typeorm';
-import { Lesson } from 'src/lessons/entities/lesson.entity';
-import { Student } from 'src/students/entities/student.entity';
+import { Lesson } from '../../lessons/entities/lesson.entity';
+import { Student } from '../../students/entities/student.entity';
 
 @Entity('attendances')
-@Unique(['lesson', 'student'])
+@Unique(['lesson_id', 'student_id'])
 export class Attendance {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Lesson, (lesson) => lesson.attendance, { onDelete: 'CASCADE' })
+  @Column()
+  lesson_id: number;
+
+  @ManyToOne(() => Lesson, (lesson) => lesson.attendances, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'lesson_id' })
   lesson: Lesson;
 
-  @ManyToOne(() => Student, (student) => student.attendance, { onDelete: 'CASCADE' })
+  @Column()
+  student_id: number;
+
+  @ManyToOne(() => Student, (student) => student.attendances, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'student_id' })
   student: Student;
 
-  @Column({
-    type: 'varchar',
-    length: 20,
-  })
+  @Column({ length: 20 })
   status: 'present' | 'absent' | 'late' | 'early_exit';
 
-  @Column({
-    type: 'boolean',
-    default: false
-  })
+  @Column({ default: false })
   justified: boolean;
 
-  @Column({
-    type: 'text',
-    nullable: true
-  })
-  note?: string;
+  @Column({ type: 'text', nullable: true })
+  note: string;
 }

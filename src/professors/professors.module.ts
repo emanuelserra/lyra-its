@@ -8,11 +8,10 @@ import { UsersModule } from '../users/users.module'; // perch√© ogni professor √
 @Module({
   imports: [
     TypeOrmModule.forFeature([Professor]), // collega l'entity Professor al repository
-    UsersModule,     // per poter usare UsersService dentro ProfessorsService/Controller
+    UsersModule, // per poter usare UsersService dentro ProfessorsService/Controller
   ],
-  controllers: [ProfessorsController],   // espone le rotte /professors
-  providers: [ProfessorsService],        // contiene la logica CRUD
-  exports: [ProfessorsService],          // opzionale: se vuoi usare ProfessorsService altrove
+  controllers: [ProfessorsController], // espone le rotte /professors
+  providers: [ProfessorsService], // contiene la logica CRUD
+  exports: [ProfessorsService], // opzionale: se vuoi usare ProfessorsService altrove
 })
 export class ProfessorsModule {}
-

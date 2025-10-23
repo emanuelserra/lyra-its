@@ -9,32 +9,44 @@ import { UpdateExamSessionDto } from './dto/update-exam_session.dto';
 export class ExamSessionsService {
   constructor(
     @InjectRepository(ExamSession)
-    private readonly examSessionsRepository: Repository<ExamSession>,
+    private examSessionRepository: Repository<ExamSession>,
   ) {}
 
-  create(createExamSessionDto: CreateExamSessionDto) {
-    const examSession = this.examSessionsRepository.create(createExamSessionDto);
-    return this.examSessionsRepository.save(examSession);
+  async findAll(): Promise<ExamSession[]> {
+    return this.examSessionRepository.find({
+      relations: ['subject', 'course', 'professor', 'results'],
+    });
   }
 
-  findAll() {
-    return this.examSessionsRepository.find();
-  }
+  async findOne(id: number): Promise<ExamSession> {
+    const examSession = await this.examSessionRepository.findOne({
+      where: { id },
+      relations: ['subject', 'course', 'professor', 'results'],
+    });
 
-  async findOne(id: number) {
-    const examSession = await this.examSessionsRepository.findOne({ where: { id } });
-    if (!examSession) throw new NotFoundException(`Exam session #${id} not found`);
+    if (!examSession) {
+      throw new NotFoundException(`ExamSession with ID ${id} not found`);
+    }
+
     return examSession;
   }
 
-  async update(id: number, updateExamSessionDto: UpdateExamSessionDto) {
-    await this.examSessionsRepository.update(id, updateExamSessionDto);
-    return this.findOne(id);
+  async create(createDto: CreateExamSessionDto): Promise<ExamSession> {
+    const examSession = this.examSessionRepository.create(createDto);
+    return this.examSessionRepository.save(examSession);
   }
 
-  async remove(id: number) {
-    const result = await this.examSessionsRepository.delete(id);
-    if (result.affected === 0) throw new NotFoundException(`Exam session #${id} not found`);
-    return { deleted: true };
+  async update(
+    id: number,
+    updateDto: UpdateExamSessionDto,
+  ): Promise<ExamSession> {
+    const examSession = await this.findOne(id);
+    Object.assign(examSession, updateDto);
+    return this.examSessionRepository.save(examSession);
+  }
+
+  async remove(id: number): Promise<void> {
+    const examSession = await this.findOne(id);
+    await this.examSessionRepository.remove(examSession);
   }
 }

@@ -1,16 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ExamSessionsService } from './exam_sessions.service';
 import { CreateExamSessionDto } from './dto/create-exam_session.dto';
 import { UpdateExamSessionDto } from './dto/update-exam_session.dto';
 
-@Controller('exam_sessions')
+@Controller('exam-sessions')
 export class ExamSessionsController {
   constructor(private readonly examSessionsService: ExamSessionsService) {}
-
-  @Post()
-  create(@Body() createExamSessionDto: CreateExamSessionDto) {
-    return this.examSessionsService.create(createExamSessionDto);
-  }
 
   @Get()
   findAll() {
@@ -22,9 +25,14 @@ export class ExamSessionsController {
     return this.examSessionsService.findOne(+id);
   }
 
+  @Post()
+  create(@Body() createDto: CreateExamSessionDto) {
+    return this.examSessionsService.create(createDto);
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateExamSessionDto: UpdateExamSessionDto) {
-    return this.examSessionsService.update(+id, updateExamSessionDto);
+  update(@Param('id') id: string, @Body() updateDto: UpdateExamSessionDto) {
+    return this.examSessionsService.update(+id, updateDto);
   }
 
   @Delete(':id')

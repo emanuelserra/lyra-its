@@ -1,30 +1,4 @@
-import { Transform } from 'class-transformer';
-import {
-    IsDate,
-    IsNumber,
-    IsOptional
-} from 'class-validator';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateLessonDto } from './create-lesson.dto';
 
-export class UpdateLessonDto {
-    @IsOptional()
-    @Transform(({ value }) => new Date(value))
-    @IsDate()
-    startTime?: Date;
-
-    @IsOptional()
-    @Transform(({ value }) => new Date(value))
-    @IsDate()
-    endTime?: Date;
-
-    @IsOptional()
-    @IsNumber()
-    courseId?: number;
-
-    @IsOptional()
-    @IsNumber()
-    professorId?: number;
-
-    @IsOptional()
-    @IsNumber()
-    subjectId?: number;
-}
+export class UpdateLessonDto extends PartialType(CreateLessonDto) {}

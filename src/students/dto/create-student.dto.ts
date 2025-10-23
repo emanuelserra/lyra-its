@@ -1,25 +1,23 @@
-import { IsInt, IsOptional, IsString, IsIn } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, IsIn, Min } from 'class-validator';
 
 export class CreateStudentDto {
-  @IsOptional()
-  @IsInt()
-  enrollment_number?: string | null;
+  @IsNumber()
+  @IsNotEmpty()
+  user_id: number;
 
-  @IsOptional()
-  @IsInt()
-  enrollment_year?: number | null;
+  @IsNumber()
+  @IsNotEmpty()
+  course_id: number;
 
-//   @IsOptional()
-//   @IsString()
-//   status?: string;
+  @IsString()
+  @IsNotEmpty()
+  enrollment_number: string;
 
+  @IsNumber()
+  @Min(1900)
+  enrollment_year: number;
 
-  @IsOptional()
-  @IsIn (['active','graduated','retired'])
+  @IsString()
+  @IsIn(['active', 'graduated', 'retired'])
   status?: 'active' | 'graduated' | 'retired';
-
-  // se vuoi passare userId direttamente:
-  @IsInt()
-  userId: number;
 }
-

@@ -12,4 +12,4 @@ import { Student } from 'src/students/entities/student.entity';
   providers: [AttendancesService],
   exports: [AttendancesService],
 })
-export class AttendancesModule { }
+export class AttendancesModule {}

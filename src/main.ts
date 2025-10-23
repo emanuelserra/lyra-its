@@ -5,11 +5,10 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ✅ ValidationPipe per DTO con class-validator
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
 
   await app.listen(3000);
 }
-bootstrap();
+void bootstrap();

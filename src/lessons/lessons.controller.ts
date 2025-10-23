@@ -1,37 +1,42 @@
 import {
   Controller,
-  Post,
   Get,
+  Post,
+  Body,
   Patch,
   Param,
-  Body
+  Delete,
 } from '@nestjs/common';
 import { LessonsService } from './lessons.service';
 import { CreateLessonDto } from './dto/create-lesson.dto';
 import { UpdateLessonDto } from './dto/update-lesson.dto';
-import { Lesson } from './entities/lesson.entity';
 
 @Controller('lessons')
 export class LessonsController {
-  constructor(private readonly lessonsService: LessonsService) { }
-
-  @Post()
-  create(@Body() dto: CreateLessonDto): Promise<Lesson> {
-    return this.lessonsService.create(dto);
-  }
+  constructor(private readonly lessonsService: LessonsService) {}
 
   @Get()
-  findAll(): Promise<Lesson[]> {
+  findAll() {
     return this.lessonsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<Lesson> {
+  findOne(@Param('id') id: string) {
     return this.lessonsService.findOne(+id);
   }
 
+  @Post()
+  create(@Body() createDto: CreateLessonDto) {
+    return this.lessonsService.create(createDto);
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateLessonDto): Promise<Lesson> {
-    return this.lessonsService.update(+id, dto);
+  update(@Param('id') id: string, @Body() updateDto: UpdateLessonDto) {
+    return this.lessonsService.update(+id, updateDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.lessonsService.remove(+id);
   }
 }

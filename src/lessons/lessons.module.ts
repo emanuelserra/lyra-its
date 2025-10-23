@@ -13,4 +13,4 @@ import { Subject } from 'src/subjects/entities/subject.entity';
   providers: [LessonsService],
   exports: [LessonsService],
 })
-export class LessonsModule { }
+export class LessonsModule {}

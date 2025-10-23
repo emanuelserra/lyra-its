@@ -4,44 +4,46 @@ import { Repository } from 'typeorm';
 import { Professor } from './entities/professor.entity';
 import { CreateProfessorDto } from './dto/create-professor.dto';
 import { UpdateProfessorDto } from './dto/update-professor.dto';
-import { User } from '../users/entities/users.entity';
 
 @Injectable()
 export class ProfessorsService {
   constructor(
-    @InjectRepository(Professor) private repo: Repository<Professor>,
+    @InjectRepository(Professor)
+    private professorRepository: Repository<Professor>,
   ) {}
 
-  async create(dto: CreateProfessorDto, user: User) {
-    const prof = this.repo.create({
-      user_id: dto.userId,
-      user,
-      subject: dto.subject,
+  async findAll(): Promise<Professor[]> {
+    return this.professorRepository.find({
+      relations: ['user', 'subjects', 'courses', 'lessons', 'examSessions'],
     });
-    return this.repo.save(prof);
   }
 
-  findAll() {
-    return this.repo.find({ relations: ['user'] });
-  }
-
-  async findOne(userId: number) {
-    const prof = await this.repo.findOne({
-      where: { user_id: userId },
-      relations: ['user'],
+  async findOne(id: number): Promise<Professor> {
+    const professor = await this.professorRepository.findOne({
+      where: { id },
+      relations: ['user', 'subjects', 'courses', 'lessons', 'examSessions'],
     });
-    if (!prof) throw new NotFoundException('Professor not found');
-    return prof;
+
+    if (!professor) {
+      throw new NotFoundException(`Professor with ID ${id} not found`);
+    }
+
+    return professor;
   }
 
-  async update(userId: number, dto: UpdateProfessorDto) {
-    const prof = await this.findOne(userId);
-    Object.assign(prof, dto);
-    return this.repo.save(prof);
+  async create(createDto: CreateProfessorDto): Promise<Professor> {
+    const professor = this.professorRepository.create(createDto);
+    return this.professorRepository.save(professor);
   }
 
-  async remove(userId: number) {
-    const prof = await this.findOne(userId);
-    return this.repo.remove(prof);
+  async update(id: number, updateDto: UpdateProfessorDto): Promise<Professor> {
+    const professor = await this.findOne(id);
+    Object.assign(professor, updateDto);
+    return this.professorRepository.save(professor);
+  }
+
+  async remove(id: number): Promise<void> {
+    const professor = await this.findOne(id);
+    await this.professorRepository.remove(professor);
   }
 }

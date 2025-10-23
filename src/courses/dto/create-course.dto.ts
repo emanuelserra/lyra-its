@@ -1,15 +1,12 @@
-import { IsString, IsInt, Min, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsNotEmpty, Min } from 'class-validator';
 
 export class CreateCourseDto {
   @IsString()
+  @IsNotEmpty()
   name: string;
 
-  @IsOptional()
-  @IsString()
-  code?: string;
-
-  @IsInt()
+  @IsNumber()
+  @IsNotEmpty()
   @Min(1)
   duration_years: number;
 }
-

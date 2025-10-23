@@ -1,44 +1,63 @@
 import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToOne,
-    OneToMany,
-    JoinColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
 } from 'typeorm';
-import { Subject } from 'src/subjects/entities/subject.entity';
-import { Course } from 'src/courses/entities/course.entity';
-import { Professor } from 'src/professors/entities/professor.entity';
-import { Attendance } from 'src/attendances/entities/attendance.entity';
+import { Subject } from '../../subjects/entities/subject.entity';
+import { Professor } from '../../professors/entities/professor.entity';
+import { Course } from '../../courses/entities/course.entity';
+import { Attendance } from '../../attendances/entities/attendance.entity';
 
 @Entity('lessons')
 export class Lesson {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ type: 'timestamp' })
-    startTime: Date;
+  @Column()
+  subject_id: number;
 
-    @Column({ type: 'timestamp' })
-    endTime: Date;
+  @ManyToOne(() => Subject, (subject) => subject.lessons, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'subject_id' })
+  subject: Subject;
 
-    @ManyToOne(() => Course, (course) => course.lessons, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'course_id' })
-    course: Course;
+  @Column({ nullable: true })
+  professor_id: number;
 
-    @ManyToOne(() => Professor, (professor) => professor.lessons, {
-        onDelete: 'SET NULL',
-    })
-    @JoinColumn({ name: 'professor_id' })
-    professor: Professor;
+  @ManyToOne(() => Professor, (professor) => professor.lessons, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'professor_id' })
+  professor: Professor;
 
-    @ManyToOne(() => Subject, (subject) => subject.lessons, { onDelete: 'CASCADE' })
-    @JoinColumn({ name: 'subject_id' })
-    subject: Subject;
+  @Column()
+  course_id: number;
 
-    @OneToMany(() => Attendance, (attendance) => attendance.lesson, {
-        cascade: true,
-        onDelete: 'CASCADE',
-    })
-    attendance: Attendance[];
+  @ManyToOne(() => Course, (course) => course.lessons, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'course_id' })
+  course: Course;
+
+  @Column({ type: 'date' })
+  lesson_date: Date;
+
+  @Column({ type: 'time' })
+  start_time: string;
+
+  @Column({ type: 'time' })
+  end_time: string;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
+
+  @OneToMany(() => Attendance, (attendance) => attendance.lesson)
+  attendances: Attendance[];
 }

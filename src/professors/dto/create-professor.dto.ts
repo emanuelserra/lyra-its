@@ -1,11 +1,7 @@
-import { IsInt, IsString, Length } from 'class-validator'; 
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateProfessorDto {
-  @IsInt()
-  userId: number;   // l'ID dell'utente già esistente
-
-  @IsString()
-  @Length(1, 150)
-  subject: string;
+  @IsNumber()
+  @IsNotEmpty()
+  user_id: number;
 }
-

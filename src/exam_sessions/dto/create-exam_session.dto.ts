@@ -1,17 +1,29 @@
-import { IsDateString, IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  IsNumber,
+  IsNotEmpty,
+  IsDateString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateExamSessionDto {
-  @IsInt()
+  @IsNumber()
+  @IsNotEmpty()
   subject_id: number;
 
-  @IsInt()
+  @IsNumber()
+  @IsNotEmpty()
   course_id: number;
 
+  @IsNumber()
   @IsOptional()
-  @IsInt()
   professor_id?: number;
 
-  @IsNotEmpty()
   @IsDateString()
+  @IsNotEmpty()
   exam_date: string;
+
+  @IsString()
+  @IsOptional()
+  exam_time?: string;
 }

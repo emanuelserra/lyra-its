@@ -1,16 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ExamResultsService } from './exam_results.service';
 import { CreateExamResultDto } from './dto/create-exam_result.dto';
 import { UpdateExamResultDto } from './dto/update-exam_result.dto';
 
-@Controller('exam_results')
+@Controller('exam-results')
 export class ExamResultsController {
   constructor(private readonly examResultsService: ExamResultsService) {}
-
-  @Post()
-  create(@Body() dto: CreateExamResultDto) {
-    return this.examResultsService.create(dto);
-  }
 
   @Get()
   findAll() {
@@ -22,9 +25,14 @@ export class ExamResultsController {
     return this.examResultsService.findOne(+id);
   }
 
+  @Post()
+  create(@Body() createDto: CreateExamResultDto) {
+    return this.examResultsService.create(createDto);
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateExamResultDto) {
-    return this.examResultsService.update(+id, dto);
+  update(@Param('id') id: string, @Body() updateDto: UpdateExamResultDto) {
+    return this.examResultsService.update(+id, updateDto);
   }
 
   @Delete(':id')

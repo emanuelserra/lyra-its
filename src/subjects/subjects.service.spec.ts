@@ -38,4 +38,3 @@ export class SubjectsService {
     return this.subjectRepo.remove(subject);
   }
 }
-

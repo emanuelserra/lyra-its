@@ -1,31 +1,33 @@
-import { Transform } from 'class-transformer';
 import {
-    IsDate,
-    IsNumber,
-    IsNotEmpty
+  IsNumber,
+  IsNotEmpty,
+  IsDateString,
+  IsOptional,
+  IsString,
 } from 'class-validator';
 
 export class CreateLessonDto {
+  @IsNumber()
+  @IsNotEmpty()
+  subject_id: number;
 
-    @Transform(({ value }) => new Date(value))
-    @IsNotEmpty()
-    @IsDate()
-    startTime: Date;
+  @IsNumber()
+  @IsOptional()
+  professor_id?: number;
 
-    @IsNotEmpty()
-    @Transform(({ value }) => new Date(value))
-    @IsDate()
-    endTime: Date;
+  @IsNumber()
+  @IsNotEmpty()
+  course_id: number;
 
-    @IsNotEmpty()
-    @IsNumber()
-    courseId: number;
+  @IsDateString()
+  @IsNotEmpty()
+  lesson_date: string;
 
-    @IsNotEmpty()
-    @IsNumber()
-    professorId: number;
+  @IsString()
+  @IsNotEmpty()
+  start_time: string;
 
-    @IsNotEmpty()
-    @IsNumber()
-    subjectId: number;
+  @IsString()
+  @IsNotEmpty()
+  end_time: string;
 }

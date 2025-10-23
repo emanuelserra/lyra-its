@@ -1,5 +1,18 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
-import { Course } from '../../courses/entities/course.entity'; // Cambia se il path è diverso
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  ManyToMany,
+} from 'typeorm';
+import { Course } from '../../courses/entities/course.entity';
+import { Lesson } from '../../lessons/entities/lesson.entity';
+import { Professor } from '../../professors/entities/professor.entity';
+import { ExamSession } from '../../exam_sessions/entities/exam_session.entity';
 
 @Entity('subjects')
 export class Subject {
@@ -9,19 +22,28 @@ export class Subject {
   @Column({ length: 150 })
   name: string;
 
-  @Column({ name: 'duration_hours', type: 'int' })
-  durationHours: number;
+  @Column()
+  duration_hours: number;
 
-  @Column({ name: 'course_id' })
-  courseId: number;
+  @Column()
+  course_id: number;
 
-  @ManyToOne(() => Course, course => course.subjects, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Course, (course) => course.subjects, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'course_id' })
   course: Course;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  @CreateDateColumn()
+  created_at: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  @UpdateDateColumn()
+  updated_at: Date;
+
+  @OneToMany(() => Lesson, (lesson) => lesson.subject)
+  lessons: Lesson[];
+
+  @ManyToMany(() => Professor, (professor) => professor.subjects)
+  professors: Professor[];
+
+  @OneToMany(() => ExamSession, (session) => session.subject)
+  examSessions: ExamSession[];
 }
-

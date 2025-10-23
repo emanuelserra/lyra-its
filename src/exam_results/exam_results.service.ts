@@ -9,32 +9,44 @@ import { UpdateExamResultDto } from './dto/update-exam_result.dto';
 export class ExamResultsService {
   constructor(
     @InjectRepository(ExamResult)
-    private readonly examResultsRepository: Repository<ExamResult>,
+    private examResultRepository: Repository<ExamResult>,
   ) {}
 
-  create(dto: CreateExamResultDto) {
-    const result = this.examResultsRepository.create(dto);
-    return this.examResultsRepository.save(result);
+  async findAll(): Promise<ExamResult[]> {
+    return this.examResultRepository.find({
+      relations: ['examSession', 'student'],
+    });
   }
 
-  findAll() {
-    return this.examResultsRepository.find();
+  async findOne(id: number): Promise<ExamResult> {
+    const examResult = await this.examResultRepository.findOne({
+      where: { id },
+      relations: ['examSession', 'student'],
+    });
+
+    if (!examResult) {
+      throw new NotFoundException(`ExamResult with ID ${id} not found`);
+    }
+
+    return examResult;
   }
 
-  async findOne(id: number) {
-    const result = await this.examResultsRepository.findOne({ where: { id } });
-    if (!result) throw new NotFoundException(`Exam result #${id} not found`);
-    return result;
+  async create(createDto: CreateExamResultDto): Promise<ExamResult> {
+    const examResult = this.examResultRepository.create(createDto);
+    return this.examResultRepository.save(examResult);
   }
 
-  async update(id: number, dto: UpdateExamResultDto) {
-    await this.examResultsRepository.update(id, dto);
-    return this.findOne(id);
+  async update(
+    id: number,
+    updateDto: UpdateExamResultDto,
+  ): Promise<ExamResult> {
+    const examResult = await this.findOne(id);
+    Object.assign(examResult, updateDto);
+    return this.examResultRepository.save(examResult);
   }
 
-  async remove(id: number) {
-    const res = await this.examResultsRepository.delete(id);
-    if (res.affected === 0) throw new NotFoundException(`Exam result #${id} not found`);
-    return { deleted: true };
+  async remove(id: number): Promise<void> {
+    const examResult = await this.findOne(id);
+    await this.examResultRepository.remove(examResult);
   }
 }
