@@ -46,4 +46,37 @@ export class StudentsService {
     const student = await this.findOne(id);
     await this.studentRepository.remove(student);
   }
+
+  async findByUserId(userId: number): Promise<Student> {
+    const student = await this.studentRepository.findOne({
+      where: { user_id: userId },
+      relations: ['user', 'course', 'attendances', 'examResults'],
+    });
+
+    if (!student) {
+      throw new NotFoundException(
+        `Student with user ID ${userId} not found`,
+      );
+    }
+
+    return student;
+  }
+
+  async getAttendances(userId: number): Promise<any[]> {
+    const student = await this.findByUserId(userId);
+    return this.studentRepository.find({
+      where: { id: student.id },
+      relations: ['attendances', 'attendances.lesson', 'attendances.lesson.subject'],
+      select: ['attendances'],
+    }).then(s => s[0]?.attendances || []);
+  }
+
+  async getGrades(userId: number): Promise<any[]> {
+    const student = await this.findByUserId(userId);
+    return this.studentRepository.find({
+      where: { id: student.id },
+      relations: ['examResults', 'examResults.examSession', 'examResults.examSession.subject'],
+      select: ['examResults'],
+    }).then(s => s[0]?.examResults || []);
+  }
 }

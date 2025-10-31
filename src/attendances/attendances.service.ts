@@ -49,4 +49,18 @@ export class AttendancesService {
     const attendance = await this.findOne(id);
     await this.attendanceRepository.remove(attendance);
   }
+
+  async findByStudent(studentId: number): Promise<Attendance[]> {
+    return this.attendanceRepository.find({
+      where: { student_id: studentId },
+      relations: ['lesson', 'student', 'lesson.subject'],
+    });
+  }
+
+  async findByLesson(lessonId: number): Promise<Attendance[]> {
+    return this.attendanceRepository.find({
+      where: { lesson_id: lessonId },
+      relations: ['lesson', 'student'],
+    });
+  }
 }

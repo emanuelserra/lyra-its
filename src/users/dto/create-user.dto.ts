@@ -3,9 +3,10 @@ import {
   IsString,
   IsEmail,
   IsDateString,
-  IsIn,
+  IsEnum,
   Length,
 } from 'class-validator';
+import { UserRole } from '../../common/enums/user-role.enum';
 
 export class CreateUserDto {
   @IsString()
@@ -35,7 +36,6 @@ export class CreateUserDto {
   @Length(1, 20)
   phone: string;
 
-  @IsString()
-  @IsIn(['student', 'professor', 'admin', 'tutor'])
-  role: 'student' | 'professor' | 'admin' | 'tutor';
+  @IsEnum(UserRole)
+  role: UserRole;
 }

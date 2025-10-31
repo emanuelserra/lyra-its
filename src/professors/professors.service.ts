@@ -46,4 +46,29 @@ export class ProfessorsService {
     const professor = await this.findOne(id);
     await this.professorRepository.remove(professor);
   }
+
+  async findByUserId(userId: number): Promise<Professor> {
+    const professor = await this.professorRepository.findOne({
+      where: { user: { id: userId } },
+      relations: ['user', 'subjects', 'courses', 'lessons', 'examSessions'],
+    });
+
+    if (!professor) {
+      throw new NotFoundException(
+        `Professor with user ID ${userId} not found`,
+      );
+    }
+
+    return professor;
+  }
+
+  async getLessons(userId: number): Promise<any[]> {
+    const professor = await this.findByUserId(userId);
+    return professor.lessons || [];
+  }
+
+  async getSubjects(userId: number): Promise<any[]> {
+    const professor = await this.findByUserId(userId);
+    return professor.subjects || [];
+  }
 }

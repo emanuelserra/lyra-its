@@ -49,4 +49,11 @@ export class ExamResultsService {
     const examResult = await this.findOne(id);
     await this.examResultRepository.remove(examResult);
   }
+
+  async findByStudent(studentId: number): Promise<ExamResult[]> {
+    return this.examResultRepository.find({
+      where: { student_id: studentId },
+      relations: ['examSession', 'student', 'examSession.subject'],
+    });
+  }
 }

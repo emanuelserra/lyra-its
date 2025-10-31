@@ -1,0 +1,508 @@
+### Variables
+@baseUrl = http://localhost:3000
+@adminToken =
+@professorToken =
+@tutorToken =
+@studentToken =
+@refreshToken =
+
+### ============================================
+### AUTH ENDPOINTS
+### ============================================
+
+### Login as ADMIN
+# @name loginAdmin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@lyra.edu",
+  "password": "password123"
+}
+
+### Login as PROFESSOR
+# @name loginProfessor
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "mario.rossi@lyra.edu",
+  "password": "password123"
+}
+
+### Login as TUTOR (NEW ROLE)
+# @name loginTutor
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "anna.tutor@lyra.edu",
+  "password": "password123"
+}
+
+### Login as STUDENT
+# @name loginStudent
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "giovanni.verdi@student.lyra.edu",
+  "password": "password123"
+}
+
+### Get My Profile (All roles can access)
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{adminToken}}
+
+### Refresh Token
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Logout
+POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### ============================================
+### USERS ENDPOINTS (ADMIN ONLY)
+### ============================================
+
+### Get All Users - ADMIN ONLY ✅
+GET {{baseUrl}}/users
+Authorization: Bearer {{adminToken}}
+
+### Get User Roles - PUBLIC ✅
+GET {{baseUrl}}/users/roles
+
+### Get User by ID - ADMIN ONLY ✅
+GET {{baseUrl}}/users/1
+Authorization: Bearer {{adminToken}}
+
+### Create User - ADMIN ONLY ✅
+POST {{baseUrl}}/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "first_name": "Nuovo",
+  "last_name": "Utente",
+  "email": "nuovo.utente@lyra.edu",
+  "password_hash": "password123",
+  "birth_date": "1995-05-15",
+  "phone": "+39 333 9999999",
+  "role": "student"
+}
+
+### Update User - ADMIN ONLY ✅
+PATCH {{baseUrl}}/users/1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "phone": "+39 333 0000000"
+}
+
+### Delete User - ADMIN ONLY ✅
+DELETE {{baseUrl}}/users/1
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### STUDENTS ENDPOINTS
+### ============================================
+
+### Create Student - ADMIN ONLY ✅
+POST {{baseUrl}}/students
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "user_id": 4,
+  "course_id": 1,
+  "enrollment_year": 2024,
+  "enrollment_number": "S999"
+}
+
+### Get All Students - ADMIN, PROFESSOR, TUTOR ✅
+GET {{baseUrl}}/students
+Authorization: Bearer {{tutorToken}}
+
+### Get My Student Profile - STUDENT ONLY ✅
+GET {{baseUrl}}/students/me
+Authorization: Bearer {{studentToken}}
+
+### Get My Attendances - STUDENT ONLY ✅
+GET {{baseUrl}}/students/me/attendances
+Authorization: Bearer {{studentToken}}
+
+### Get My Grades - STUDENT ONLY ✅
+GET {{baseUrl}}/students/me/grades
+Authorization: Bearer {{studentToken}}
+
+### Get Student by ID - ALL ROLES ✅ (STUDENT can only access their own)
+GET {{baseUrl}}/students/1
+Authorization: Bearer {{tutorToken}}
+
+### Update Student - ADMIN ONLY ✅
+PATCH {{baseUrl}}/students/1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "enrollment_year": 2021
+}
+
+### Delete Student - ADMIN ONLY ✅
+DELETE {{baseUrl}}/students/1
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### PROFESSORS ENDPOINTS
+### ============================================
+
+### Create Professor - ADMIN ONLY ✅
+POST {{baseUrl}}/professors
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "user_id": 2,
+  "department": "Fisica",
+  "specialization": "Fisica Quantistica"
+}
+
+### Get All Professors - ADMIN ONLY ✅
+GET {{baseUrl}}/professors
+Authorization: Bearer {{adminToken}}
+
+### Get My Professor Profile - PROFESSOR ONLY ✅
+GET {{baseUrl}}/professors/me
+Authorization: Bearer {{professorToken}}
+
+### Get My Lessons - PROFESSOR ONLY ✅
+GET {{baseUrl}}/professors/me/lessons
+Authorization: Bearer {{professorToken}}
+
+### Get My Subjects - PROFESSOR ONLY ✅
+GET {{baseUrl}}/professors/me/subjects
+Authorization: Bearer {{professorToken}}
+
+### Get Professor by ID - ADMIN, PROFESSOR ✅
+GET {{baseUrl}}/professors/1
+Authorization: Bearer {{adminToken}}
+
+### Update Professor - ADMIN ONLY ✅
+PATCH {{baseUrl}}/professors/1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "department": "Informatica Applicata"
+}
+
+### Delete Professor - ADMIN ONLY ✅
+DELETE {{baseUrl}}/professors/1
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### COURSES ENDPOINTS
+### ============================================
+
+### Create Course - ADMIN ONLY ✅
+POST {{baseUrl}}/courses
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Fisica",
+  "description": "Corso di laurea triennale in Fisica",
+  "duration_years": 3,
+  "credits": 180
+}
+
+### Get All Courses - ALL AUTHENTICATED USERS ✅
+GET {{baseUrl}}/courses
+Authorization: Bearer {{tutorToken}}
+
+### Get Course by ID - ALL AUTHENTICATED USERS ✅
+GET {{baseUrl}}/courses/1
+Authorization: Bearer {{studentToken}}
+
+### Update Course - ADMIN ONLY ✅
+PATCH {{baseUrl}}/courses/1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "description": "Corso di laurea triennale in Informatica - Aggiornato"
+}
+
+### Delete Course - ADMIN ONLY ✅
+DELETE {{baseUrl}}/courses/1
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### SUBJECTS ENDPOINTS
+### ============================================
+
+### Create Subject - ADMIN ONLY ✅
+POST {{baseUrl}}/subjects
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "Reti di Calcolatori",
+  "duration_hours": 60,
+  "course_id": 1
+}
+
+### Get All Subjects - ALL AUTHENTICATED USERS ✅
+GET {{baseUrl}}/subjects
+Authorization: Bearer {{tutorToken}}
+
+### Get Subject by ID - ALL AUTHENTICATED USERS ✅
+GET {{baseUrl}}/subjects/1
+Authorization: Bearer {{studentToken}}
+
+### Update Subject - ADMIN ONLY ✅
+PATCH {{baseUrl}}/subjects/1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "duration_hours": 80
+}
+
+### Delete Subject - ADMIN ONLY ✅
+DELETE {{baseUrl}}/subjects/1
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### LESSONS ENDPOINTS
+### ============================================
+
+### Create Lesson - ADMIN, PROFESSOR ✅
+POST {{baseUrl}}/lessons
+Authorization: Bearer {{professorToken}}
+Content-Type: application/json
+
+{
+  "subject_id": 1,
+  "course_id": 1,
+  "lesson_date": "2025-12-15",
+  "start_time": "10:00",
+  "end_time": "12:00"
+}
+
+### Get All Lessons - ALL AUTHENTICATED USERS ✅
+GET {{baseUrl}}/lessons
+Authorization: Bearer {{tutorToken}}
+
+### Get Lesson by ID - ALL AUTHENTICATED USERS ✅
+GET {{baseUrl}}/lessons/1
+Authorization: Bearer {{studentToken}}
+
+### Update Lesson - ADMIN, PROFESSOR ✅
+PATCH {{baseUrl}}/lessons/1
+Authorization: Bearer {{professorToken}}
+Content-Type: application/json
+
+{
+  "start_time": "09:00"
+}
+
+### Delete Lesson - ADMIN ONLY ✅
+DELETE {{baseUrl}}/lessons/1
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### ATTENDANCES ENDPOINTS
+### ============================================
+
+### Create Attendance - ADMIN, PROFESSOR, TUTOR ✅
+POST {{baseUrl}}/attendances
+Authorization: Bearer {{tutorToken}}
+Content-Type: application/json
+
+{
+  "lesson_id": 1,
+  "student_id": 1,
+  "status": "present",
+  "justified": false
+}
+
+### Get All Attendances - ADMIN, PROFESSOR, TUTOR ✅
+GET {{baseUrl}}/attendances
+Authorization: Bearer {{tutorToken}}
+
+### Get Attendances by Lesson - ADMIN, PROFESSOR, TUTOR ✅
+GET {{baseUrl}}/attendances/lesson/1
+Authorization: Bearer {{tutorToken}}
+
+### Get Attendances by Student - ALL ROLES ✅ (STUDENT can only access their own)
+GET {{baseUrl}}/attendances/student/1
+Authorization: Bearer {{tutorToken}}
+
+### Get Attendance by ID - ADMIN, PROFESSOR, TUTOR ✅
+GET {{baseUrl}}/attendances/1
+Authorization: Bearer {{tutorToken}}
+
+### Update Attendance - ADMIN, PROFESSOR, TUTOR ✅
+PATCH {{baseUrl}}/attendances/1
+Authorization: Bearer {{tutorToken}}
+Content-Type: application/json
+
+{
+  "status": "absent",
+  "justified": true
+}
+
+### Delete Attendance - ADMIN ONLY ✅
+DELETE {{baseUrl}}/attendances/1
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### EXAM SESSIONS ENDPOINTS
+### ============================================
+
+### Create Exam Session - ADMIN, PROFESSOR ✅
+POST {{baseUrl}}/exam-sessions
+Authorization: Bearer {{professorToken}}
+Content-Type: application/json
+
+{
+  "subject_id": 1,
+  "course_id": 1,
+  "exam_date": "2025-02-15",
+  "exam_time": "09:00"
+}
+
+### Get All Exam Sessions - ALL AUTHENTICATED USERS ✅
+GET {{baseUrl}}/exam-sessions
+Authorization: Bearer {{tutorToken}}
+
+### Get Exam Session by ID - ALL AUTHENTICATED USERS ✅
+GET {{baseUrl}}/exam-sessions/1
+Authorization: Bearer {{studentToken}}
+
+### Update Exam Session - ADMIN, PROFESSOR ✅
+PATCH {{baseUrl}}/exam-sessions/1
+Authorization: Bearer {{professorToken}}
+Content-Type: application/json
+
+{
+  "exam_time": "10:00"
+}
+
+### Delete Exam Session - ADMIN ONLY ✅
+DELETE {{baseUrl}}/exam-sessions/1
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### EXAM RESULTS ENDPOINTS
+### ============================================
+
+### Create Exam Result - ADMIN, PROFESSOR ✅
+POST {{baseUrl}}/exam-results
+Authorization: Bearer {{professorToken}}
+Content-Type: application/json
+
+{
+  "exam_session_id": 1,
+  "student_id": 1,
+  "grade": 30,
+  "passed": true
+}
+
+### Get All Exam Results - ADMIN, PROFESSOR, TUTOR ✅
+GET {{baseUrl}}/exam-results
+Authorization: Bearer {{tutorToken}}
+
+### Get Exam Results by Student - ALL ROLES ✅ (STUDENT can only access their own)
+GET {{baseUrl}}/exam-results/student/1
+Authorization: Bearer {{tutorToken}}
+
+### Get Exam Result by ID - ADMIN, PROFESSOR, TUTOR ✅
+GET {{baseUrl}}/exam-results/1
+Authorization: Bearer {{tutorToken}}
+
+### Update Exam Result - ADMIN, PROFESSOR ✅
+PATCH {{baseUrl}}/exam-results/1
+Authorization: Bearer {{professorToken}}
+Content-Type: application/json
+
+{
+  "grade": 27
+}
+
+### Delete Exam Result - ADMIN ONLY ✅
+DELETE {{baseUrl}}/exam-results/1
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### PERMISSION TESTS - Should FAIL ❌
+### ============================================
+
+### TUTOR tries to create Student - Should FAIL ❌
+POST {{baseUrl}}/students
+Authorization: Bearer {{tutorToken}}
+Content-Type: application/json
+
+{
+  "user_id": 99,
+  "course_id": 1,
+  "enrollment_year": 2024,
+  "enrollment_number": "S999"
+}
+
+### TUTOR tries to create Lesson - Should FAIL ❌
+POST {{baseUrl}}/lessons
+Authorization: Bearer {{tutorToken}}
+Content-Type: application/json
+
+{
+  "subject_id": 1,
+  "course_id": 1,
+  "lesson_date": "2025-12-15",
+  "start_time": "10:00",
+  "end_time": "12:00"
+}
+
+### STUDENT tries to view all students - Should FAIL ❌
+GET {{baseUrl}}/students
+Authorization: Bearer {{studentToken}}
+
+### STUDENT tries to view another student's attendances - Should FAIL ❌
+GET {{baseUrl}}/attendances/student/2
+Authorization: Bearer {{studentToken}}
+
+### PROFESSOR tries to create User - Should FAIL ❌
+POST {{baseUrl}}/users
+Authorization: Bearer {{professorToken}}
+Content-Type: application/json
+
+{
+  "first_name": "Test",
+  "last_name": "User",
+  "email": "test@lyra.edu",
+  "password_hash": "password123",
+  "role": "student"
+}
+
+### STUDENT tries to create Attendance - Should FAIL ❌
+POST {{baseUrl}}/attendances
+Authorization: Bearer {{studentToken}}
+Content-Type: application/json
+
+{
+  "lesson_id": 1,
+  "student_id": 1,
+  "status": "present"
+}

@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Student } from '../../students/entities/student.entity';
 import { Professor } from '../../professors/entities/professor.entity';
+import { UserRole } from '../../common/enums/user-role.enum';
 
 @Entity('users')
 export class User {
@@ -32,8 +33,8 @@ export class User {
   @Column({ length: 20 })
   phone: string;
 
-  @Column({ length: 20 })
-  role: 'student' | 'professor' | 'admin' | 'tutor';
+  @Column({ type: 'varchar', length: 20 })
+  role: UserRole;
 
   @CreateDateColumn()
   created_at: Date;
