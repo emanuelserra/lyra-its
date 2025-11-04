@@ -67,4 +67,26 @@ export class AttendancesController {
   remove(@Param('id') id: string) {
     return this.attendancesService.remove(+id);
   }
+
+  @Post('self-mark')
+  @Roles(UserRole.STUDENT)
+  async selfMarkAttendance(
+    @CurrentUser() user: User,
+    @Body() body: { lesson_id: number; status: 'present' | 'late' | 'early_exit' },
+  ) {
+    if (!user.student) {
+      throw new ForbiddenException('Only students can self-mark attendance');
+    }
+    return this.attendancesService.selfMarkAttendance(
+      user.student.id,
+      body.lesson_id,
+      body.status,
+    );
+  }
+
+  @Patch(':id/confirm')
+  @Roles(UserRole.ADMIN, UserRole.PROFESSOR, UserRole.TUTOR)
+  confirmAttendance(@Param('id') id: string) {
+    return this.attendancesService.confirmAttendance(+id);
+  }
 }

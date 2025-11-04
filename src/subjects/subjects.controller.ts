@@ -44,4 +44,22 @@ export class SubjectsController {
   remove(@Param('id') id: string) {
     return this.subjectsService.remove(+id);
   }
+
+  @Post(':id/professors/:professorId')
+  @Roles(UserRole.ADMIN)
+  assignProfessor(
+    @Param('id') id: string,
+    @Param('professorId') professorId: string,
+  ) {
+    return this.subjectsService.assignProfessor(+id, +professorId);
+  }
+
+  @Delete(':id/professors/:professorId')
+  @Roles(UserRole.ADMIN)
+  removeProfessor(
+    @Param('id') id: string,
+    @Param('professorId') professorId: string,
+  ) {
+    return this.subjectsService.removeProfessor(+id, +professorId);
+  }
 }

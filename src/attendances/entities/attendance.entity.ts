@@ -41,4 +41,7 @@ export class Attendance {
 
   @Column({ type: 'text', nullable: true })
   note: string;
+
+  @Column({ default: false })
+  confirmed: boolean;
 }

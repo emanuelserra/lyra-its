@@ -66,4 +66,22 @@ export class ProfessorsController {
   remove(@Param('id') id: string) {
     return this.professorsService.remove(+id);
   }
+
+  @Post(':id/courses/:courseId')
+  @Roles(UserRole.ADMIN)
+  assignCourse(
+    @Param('id') id: string,
+    @Param('courseId') courseId: string,
+  ) {
+    return this.professorsService.assignCourse(+id, +courseId);
+  }
+
+  @Delete(':id/courses/:courseId')
+  @Roles(UserRole.ADMIN)
+  removeCourse(
+    @Param('id') id: string,
+    @Param('courseId') courseId: string,
+  ) {
+    return this.professorsService.removeCourse(+id, +courseId);
+  }
 }
