@@ -7,7 +7,7 @@ async function bootstrap() {
 
   // Enable CORS for frontend
   app.enableCors({
-    origin: ['http://localhost:3000'],
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -17,6 +17,8 @@ async function bootstrap() {
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
 
-  await app.listen(3001);
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+  console.log(`Application is running on: http://localhost:${port}`);
 }
 void bootstrap();
