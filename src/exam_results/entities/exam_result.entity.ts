@@ -34,8 +34,12 @@ export class ExamResult {
   student: Student;
 
   @Column({ type: 'decimal', precision: 3, scale: 1, nullable: true })
-  grade: number;
+  grade: number | null;
 
   @Column({ default: false })
   passed: boolean;
+
+  // 🔹 nuovo: stato del voto
+  @Column({ type: 'varchar', length: 20, default: 'pending' })
+  status: 'pending' | 'confirmed' | 'rejected';
 }

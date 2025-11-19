@@ -24,11 +24,24 @@ export class ExamSessionsController {
   }
 
   @Get()
+  // se vuoi anche tutor che vede le sessioni:
+  @Roles(
+    UserRole.ADMIN,
+    UserRole.PROFESSOR,
+    UserRole.TUTOR,
+    UserRole.STUDENT,
+  )
   findAll() {
     return this.examSessionsService.findAll();
   }
 
   @Get(':id')
+  @Roles(
+    UserRole.ADMIN,
+    UserRole.PROFESSOR,
+    UserRole.TUTOR,
+    UserRole.STUDENT,
+  )
   findOne(@Param('id') id: string) {
     return this.examSessionsService.findOne(+id);
   }

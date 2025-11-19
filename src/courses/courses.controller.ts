@@ -44,4 +44,10 @@ export class CoursesController {
   remove(@Param('id') id: string) {
     return this.coursesService.remove(+id);
   }
+
+  @Get(':id/students')
+findStudents(@Param('id') id: string) {
+  return this.coursesService.findStudents(+id);
+}
+
 }

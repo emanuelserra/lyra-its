@@ -15,6 +15,7 @@ export class ExamSessionsService {
   async findAll(): Promise<ExamSession[]> {
     return this.examSessionRepository.find({
       relations: ['subject', 'course', 'professor', 'results'],
+      order: { exam_date: 'DESC' },
     });
   }
 

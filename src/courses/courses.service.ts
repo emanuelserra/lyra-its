@@ -58,4 +58,18 @@ export class CoursesService {
     const course = await this.findOne(id);
     await this.courseRepository.remove(course);
   }
+
+  async findStudents(courseId: number) {
+  const course = await this.courseRepository.findOne({
+    where: { id: courseId },
+    relations: ['students', 'students.user'],
+  });
+
+  if (!course) {
+    throw new NotFoundException(`Course with ID ${courseId} not found`);
+  }
+
+  return course.students;
+}
+
 }

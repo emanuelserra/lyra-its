@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { ExamResultsService } from './exam_results.service';
 import { CreateExamResultDto } from './dto/create-exam_result.dto';
@@ -20,18 +21,21 @@ import { User } from '../users/entities/user.entity';
 export class ExamResultsController {
   constructor(private readonly examResultsService: ExamResultsService) {}
 
+  // creato da professore/tutor/admin
   @Post()
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.ADMIN, UserRole.PROFESSOR, UserRole.TUTOR)
   create(@Body() createDto: CreateExamResultDto) {
     return this.examResultsService.create(createDto);
   }
 
+  // elenco (opzionale status=pending)
   @Get()
   @Roles(UserRole.ADMIN, UserRole.PROFESSOR, UserRole.TUTOR)
-  findAll() {
-    return this.examResultsService.findAll();
+  findAll(@Query('status') status?: string) {
+    return this.examResultsService.findAll(status);
   }
 
+  // studente vede solo i suoi risultati
   @Get('student/:studentId')
   @Roles(UserRole.ADMIN, UserRole.PROFESSOR, UserRole.TUTOR, UserRole.STUDENT)
   async findByStudent(
@@ -50,8 +54,9 @@ export class ExamResultsController {
     return this.examResultsService.findOne(+id);
   }
 
+  // PATCH per aggiornare voto, status, ecc.
   @Patch(':id')
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR)
+  @Roles(UserRole.ADMIN, UserRole.PROFESSOR, UserRole.TUTOR)
   update(@Param('id') id: string, @Body() updateDto: UpdateExamResultDto) {
     return this.examResultsService.update(+id, updateDto);
   }

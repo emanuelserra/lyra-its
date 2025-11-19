@@ -12,16 +12,38 @@ export class ExamResultsService {
     private examResultRepository: Repository<ExamResult>,
   ) {}
 
-  async findAll(): Promise<ExamResult[]> {
+  /**
+   * Se viene passato status (es. "pending"), filtra.
+   * Altrimenti restituisce tutti i risultati.
+   */
+  async findAll(status?: string): Promise<ExamResult[]> {
+    const where = status
+      ? { status: status as 'pending' | 'confirmed' | 'rejected' }
+      : undefined;
+
     return this.examResultRepository.find({
-      relations: ['examSession', 'student'],
+      where,
+      relations: [
+        'examSession',
+        'examSession.subject',
+        'examSession.course',
+        'student',
+        'student.user',
+      ],
+      order: { id: 'DESC' },
     });
   }
 
   async findOne(id: number): Promise<ExamResult> {
     const examResult = await this.examResultRepository.findOne({
       where: { id },
-      relations: ['examSession', 'student'],
+      relations: [
+        'examSession',
+        'examSession.subject',
+        'examSession.course',
+        'student',
+        'student.user',
+      ],
     });
 
     if (!examResult) {
@@ -32,7 +54,18 @@ export class ExamResultsService {
   }
 
   async create(createDto: CreateExamResultDto): Promise<ExamResult> {
-    const examResult = this.examResultRepository.create(createDto);
+    const examResult = this.examResultRepository.create({
+      ...createDto,
+      status: (createDto.status as any) ?? 'pending',
+    });
+
+    // calcola passed in base al voto (>= 18)
+    if (typeof createDto.grade === 'number') {
+      examResult.passed = createDto.grade >= 18;
+    } else {
+      examResult.passed = false;
+    }
+
     return this.examResultRepository.save(examResult);
   }
 
@@ -41,7 +74,28 @@ export class ExamResultsService {
     updateDto: UpdateExamResultDto,
   ): Promise<ExamResult> {
     const examResult = await this.findOne(id);
+
+    // Applico i cambi (grade / status / notes...)
     Object.assign(examResult, updateDto);
+
+    // 1) Se aggiorno il voto, ricalcolo passed
+    if (typeof updateDto.grade === 'number') {
+      examResult.passed = updateDto.grade >= 18;
+    }
+
+    // 2) Se non ho cambiato il voto, ma sto confermando il risultato
+    if (
+      updateDto.status === 'confirmed' &&
+      typeof examResult.grade === 'number'
+    ) {
+      examResult.passed = examResult.grade >= 18;
+    }
+
+    // 3) Se rifiuto il risultato, lo segno come non superato
+    if (updateDto.status === 'rejected') {
+      examResult.passed = false;
+    }
+
     return this.examResultRepository.save(examResult);
   }
 
@@ -50,10 +104,20 @@ export class ExamResultsService {
     await this.examResultRepository.remove(examResult);
   }
 
+  /**
+   * Risultati filtrati per studente (per pagina studente).
+   */
   async findByStudent(studentId: number): Promise<ExamResult[]> {
     return this.examResultRepository.find({
       where: { student_id: studentId },
-      relations: ['examSession', 'student', 'examSession.subject'],
+      relations: [
+        'examSession',
+        'examSession.subject',
+        'examSession.course',
+        'student',
+        'student.user',
+      ],
+      order: { id: 'DESC' },
     });
   }
 }

@@ -1,10 +1,11 @@
 import {
-  IsBoolean,
   IsNumber,
   IsNotEmpty,
   IsOptional,
   Min,
   Max,
+  IsString,
+  IsIn,
 } from 'class-validator';
 
 export class CreateExamResultDto {
@@ -22,7 +23,13 @@ export class CreateExamResultDto {
   @Max(30)
   grade?: number;
 
-  @IsBoolean()
+  // il client può opzionalmente specificare lo stato, altrimenti il service mette 'pending'
+  @IsString()
   @IsOptional()
-  passed?: boolean;
+  @IsIn(['pending', 'confirmed', 'rejected'])
+  status?: 'pending' | 'confirmed' | 'rejected';
+
+  @IsString()
+  @IsOptional()
+  notes?: string;
 }

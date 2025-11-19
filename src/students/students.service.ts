@@ -64,19 +64,34 @@ export class StudentsService {
 
   async getAttendances(userId: number): Promise<any[]> {
     const student = await this.findByUserId(userId);
-    return this.studentRepository.find({
-      where: { id: student.id },
-      relations: ['attendances', 'attendances.lesson', 'attendances.lesson.subject'],
-      select: ['attendances'],
-    }).then(s => s[0]?.attendances || []);
+    return this.studentRepository
+      .find({
+        where: { id: student.id },
+        relations: [
+          'attendances',
+          'attendances.lesson',
+          'attendances.lesson.subject',
+        ],
+        select: ['attendances'],
+      })
+      .then((s) => s[0]?.attendances || []);
   }
 
+  // 🔹 QUI la versione nuova
   async getGrades(userId: number): Promise<any[]> {
     const student = await this.findByUserId(userId);
-    return this.studentRepository.find({
+
+    const rows = await this.studentRepository.find({
       where: { id: student.id },
-      relations: ['examResults', 'examResults.examSession', 'examResults.examSession.subject'],
+      relations: [
+        'examResults',
+        'examResults.examSession',
+        'examResults.examSession.subject',
+        'examResults.examSession.course', // << per la colonna "corso"
+      ],
       select: ['examResults'],
-    }).then(s => s[0]?.examResults || []);
+    });
+
+    return rows[0]?.examResults || [];
   }
 }
