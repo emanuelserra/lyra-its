@@ -15,6 +15,7 @@ import { ExamResultsModule } from './exam_results/exam_results.module';
 import { SeedModule } from './database/seeds/seed.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
     ExamSessionsModule,
     ExamResultsModule,
     SeedModule,
+    ReportsModule,
   ],
   providers: [
     {

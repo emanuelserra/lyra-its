@@ -12,27 +12,32 @@ export class ExamResultsService {
     private examResultRepository: Repository<ExamResult>,
   ) {}
 
-  /**
-   * Se viene passato status (es. "pending"), filtra.
-   * Altrimenti restituisce tutti i risultati.
-   */
-  async findAll(status?: string): Promise<ExamResult[]> {
-    const where = status
-      ? { status: status as 'pending' | 'confirmed' | 'rejected' }
-      : undefined;
+  async findAll(
+  status?: string,
+  sessionId?: number,
+): Promise<ExamResult[]> {
+  const where: any = {};
 
-    return this.examResultRepository.find({
-      where,
-      relations: [
-        'examSession',
-        'examSession.subject',
-        'examSession.course',
-        'student',
-        'student.user',
-      ],
-      order: { id: 'DESC' },
-    });
+  if (status) {
+    where.status = status;
   }
+  if (sessionId) {
+    where.exam_session_id = sessionId;
+  }
+
+  return this.examResultRepository.find({
+    where,
+    relations: [
+      'examSession',
+      'examSession.subject',
+      'examSession.course',
+      'student',
+      'student.user',
+    ],
+    order: { id: 'DESC' },
+  });
+}
+
 
   async findOne(id: number): Promise<ExamResult> {
     const examResult = await this.examResultRepository.findOne({
@@ -54,50 +59,70 @@ export class ExamResultsService {
   }
 
   async create(createDto: CreateExamResultDto): Promise<ExamResult> {
-    const examResult = this.examResultRepository.create({
-      ...createDto,
-      status: (createDto.status as any) ?? 'pending',
-    });
+  // 🔹 Controlla se esiste già un voto per lo stesso studente nella stessa sessione
+  const existing = await this.examResultRepository.findOne({
+    where: {
+      exam_session_id: createDto.exam_session_id,
+      student_id: createDto.student_id,
+    },
+  });
 
-    // calcola passed in base al voto (>= 18)
-    if (typeof createDto.grade === 'number') {
-      examResult.passed = createDto.grade >= 18;
-    } else {
-      examResult.passed = false;
-    }
-
-    return this.examResultRepository.save(examResult);
+  // SE ESISTE → aggiorniamo invece di creare
+  if (existing) {
+    existing.grade = createDto.grade ?? existing.grade;
+    existing.passed =
+      typeof existing.grade === 'number' ? existing.grade >= 18 : false;
+    existing.status = 'confirmed'; // lo mettiamo confermato
+    return this.examResultRepository.save(existing);
   }
+
+  // SE NON ESISTE → creiamo nuovo voto
+  const examResult = this.examResultRepository.create({
+    ...createDto,
+    status: 'confirmed', // 🔹 niente pending
+    passed:
+      typeof createDto.grade === 'number' ? createDto.grade >= 18 : false,
+  });
+
+  return this.examResultRepository.save(examResult);
+}
+
 
   async update(
-    id: number,
-    updateDto: UpdateExamResultDto,
-  ): Promise<ExamResult> {
-    const examResult = await this.findOne(id);
+  id: number,
+  updateDto: UpdateExamResultDto,
+): Promise<ExamResult> {
+  const examResult = await this.findOne(id);
 
-    // Applico i cambi (grade / status / notes...)
-    Object.assign(examResult, updateDto);
+  const votoCambiato =
+    typeof updateDto.grade === 'number' &&
+    updateDto.grade !== examResult.grade;
 
-    // 1) Se aggiorno il voto, ricalcolo passed
-    if (typeof updateDto.grade === 'number') {
-      examResult.passed = updateDto.grade >= 18;
-    }
+  // Applico le modifiche
+  Object.assign(examResult, updateDto);
 
-    // 2) Se non ho cambiato il voto, ma sto confermando il risultato
-    if (
-      updateDto.status === 'confirmed' &&
-      typeof examResult.grade === 'number'
-    ) {
-      examResult.passed = examResult.grade >= 18;
-    }
-
-    // 3) Se rifiuto il risultato, lo segno come non superato
-    if (updateDto.status === 'rejected') {
-      examResult.passed = false;
-    }
-
-    return this.examResultRepository.save(examResult);
+  // Se il voto cambia → lo stato torna a pending
+  if (votoCambiato) {
+    examResult.status = 'pending';
+    examResult.passed = false; // verrà ricalcolato quando confermato
   }
+
+  // Se status è confermato → calcolo passed
+  if (
+    updateDto.status === 'confirmed' &&
+    typeof examResult.grade === 'number'
+  ) {
+    examResult.passed = examResult.grade >= 18;
+  }
+
+  // Se status è rejected → forced fail
+  if (updateDto.status === 'rejected') {
+    examResult.passed = false;
+  }
+
+  return this.examResultRepository.save(examResult);
+}
+
 
   async remove(id: number): Promise<void> {
     const examResult = await this.findOne(id);

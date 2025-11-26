@@ -28,12 +28,18 @@ export class ExamResultsController {
     return this.examResultsService.create(createDto);
   }
 
-  // elenco (opzionale status=pending)
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.PROFESSOR, UserRole.TUTOR)
-  findAll(@Query('status') status?: string) {
-    return this.examResultsService.findAll(status);
-  }
+@Roles(UserRole.ADMIN, UserRole.PROFESSOR, UserRole.TUTOR)
+findAll(
+  @Query('status') status?: string,
+  @Query('session') sessionId?: string,
+) {
+  return this.examResultsService.findAll(
+    status,
+    sessionId ? Number(sessionId) : undefined,
+  );
+}
+
 
   // studente vede solo i suoi risultati
   @Get('student/:studentId')

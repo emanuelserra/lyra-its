@@ -33,6 +33,7 @@ export class CoursesService {
         'lessons',
         'professors',
         'examSessions',
+        'students.user'
       ],
     });
 
