@@ -24,7 +24,7 @@ import { ReportsModule } from './reports/reports.module';
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      url: process.env.DB_URL,
+      url: process.env.DATABASE_URL,
       autoLoadEntities: true,
       synchronize: process.env.NODE_ENV !== 'production',
     }),
@@ -52,4 +52,4 @@ import { ReportsModule } from './reports/reports.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }
