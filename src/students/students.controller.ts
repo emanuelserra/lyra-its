@@ -16,10 +16,14 @@ import { UserRole } from '../common/enums/user-role.enum';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
 import { ResourceOwnerGuard } from '../auth/guards/resource-owner.guard';
+import { AttendancesService } from 'src/attendances/attendances.service';
 
 @Controller('students')
 export class StudentsController {
-  constructor(private readonly studentsService: StudentsService) {}
+  constructor(
+    private readonly studentsService: StudentsService,
+    private readonly attendancesService: AttendancesService, 
+  ) {}
 
   @Post()
   @Roles(UserRole.ADMIN)
@@ -39,10 +43,24 @@ export class StudentsController {
     return this.studentsService.findByUserId(user.id);
   }
 
-  @Get('me/attendances')
+  
+  @Get('me/attendance')
   @Roles(UserRole.STUDENT)
-  getMyAttendances(@CurrentUser() user: User) {
-    return this.studentsService.getAttendances(user.id);
+  async myAttendance(@CurrentUser() user: User) {
+    const studentId = user.student?.id;
+    if (!studentId) return [];
+
+    const rows = await this.attendancesService.findByStudent(studentId);
+
+    return rows.map((a) => ({
+      id: a.id,
+      lesson_date: a.lesson?.lesson_date ?? null,
+      lesson_start_time: a.lesson?.start_time ?? null,
+      lesson_end_time: a.lesson?.end_time ?? null,
+      course_name: a.lesson?.course?.name ?? null,
+      subject_name: a.lesson?.subject?.name ?? null,
+      status: a.status,
+    }));
   }
 
   @Get('me/grades')

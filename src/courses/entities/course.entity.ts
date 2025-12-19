@@ -21,8 +21,11 @@ export class Course {
   @Column({ length: 150 })
   name: string;
 
-  @Column()
-  duration_years: number;
+  @Column({type:'int'})
+  total_hours: number;
+
+  @Column({ type: 'int', default: 20 })
+  max_absence_percentage: number;
 
   @CreateDateColumn()
   created_at: Date;
@@ -44,4 +47,8 @@ export class Course {
 
   @OneToMany(() => ExamSession, (session) => session.course)
   examSessions: ExamSession[];
+
+  get max_absence_hours(): number{
+    return (this.total_hours * this.max_absence_percentage) / 100;
+  }
 }

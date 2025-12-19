@@ -53,7 +53,7 @@ export class AttendancesService {
   async findByStudent(studentId: number): Promise<Attendance[]> {
     return this.attendanceRepository.find({
       where: { student_id: studentId },
-      relations: ['lesson', 'student', 'lesson.subject'],
+      relations: ['lesson', 'student', 'lesson.subject', 'lesson.course'],
     });
   }
 
